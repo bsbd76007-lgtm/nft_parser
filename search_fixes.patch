@@ -1,0 +1,30 @@
+diff --git a/src/handlers/filters_menu.py b/src/handlers/filters_menu.py
+index b35835f..1dca8cc 100644
+--- a/src/handlers/filters_menu.py
++++ b/src/handlers/filters_menu.py
+@@ -64,7 +64,10 @@ async def callback_quick_search_menu(callback: CallbackQuery):
+     await callback.answer()
+ 
+ 
+-@router.callback_query(F.data.startswith("quick_mode:"))
++@router.callback_query(
++    F.data.startswith("quick_mode:"),
++    ~F.message.text.contains("Выберите ценовой режим"),
++)
+ async def callback_quick_mode(callback: CallbackQuery):
+     mode = callback.data.split(":")[1]
+     label = get_quick_mode_label(mode)
+diff --git a/src/services/fragment_parser.py b/src/services/fragment_parser.py
+index 0878590..d4cfb9d 100644
+--- a/src/services/fragment_parser.py
++++ b/src/services/fragment_parser.py
+@@ -1014,9 +1014,6 @@ class FragmentParser:
+                                 if len(results) >= max_results:
+                                     break
+                     
+-                    if attempts >= batch_size and collection_matches == 0:
+-                        break
+-                    
+                     if progress_callback and len(results) < max_results:
+                         await progress_callback(len(results), max_results, total_attempts, None)
+                     
